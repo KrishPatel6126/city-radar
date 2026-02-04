@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Maple Street Deli",
+    "category": "health",
+    "city": "Oak Hill Neighborhood",
+    "area": "River Drive by the stone bridge",
+    "budget": "low"
+  },
+  {
+    "name": "Lal Mandir Bus Stop",
+    "category": "transport",
+    "city": "Adajan",
+    "area": "Lal Mandir",
+    "budget": "low"
+  }
+]
