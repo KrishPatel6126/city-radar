@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>City Radar | LBS Project</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <h1>City Radar</h1>
+  <span>LBS Team</span>
+</header>
+
+<nav class="tabs">
+  <button class="tab active" onclick="switchSlide('internet', this)">Internet Recommended</button>
+  <button class="tab" onclick="switchSlide('local', this)">Local Public Recommended</button>
+</nav>
+
+<datalist id="citySuggestions">
+  <option value="Surat">
+  <option value="Mumbai">
+  <option value="Delhi">
+  <option value="Bangalore">
+  <option value="Ahmedabad">
+</datalist>
+
+<section id="internet" class="slide active">
+  <div class="overlay"></div>
+  <div class="content">
+    <h2 id="internetTitle">Discover Your City</h2>
+    <div class="search-bar">
+      <div style="display:flex; gap:8px;">
+        <input id="internetCity" list="citySuggestions" placeholder="Enter city or country">
+        <button onclick="getUserLocation('internetCity')" style="width:50px; padding:0;">📍</button>
+      </div>
+      <button onclick="setLocation()">Search Location</button>
+    </div>
+
+    <div id="internetOptions" class="options hidden">
+      <select id="internetCategory">
+        <option value="">Select your need</option>
+        <option value="food">Food</option>
+        <option value="street food">Street Food</option>
+        <option value="hospital">Hospital</option>
+        <option value="grocery">Grocery</option>
+        <option value="hostel">Hostel</option>
+        <option value="bus stop">Bus Stop</option>
+        <option value="rickshaw stand">Rickshaw Stand</option>
+        <option value="metro station">Metro Station</option>
+        <option value="railway station">Railway Station</option>
+        <option value="taxi stand">Taxi Stand</option>
+      </select>
+      <button onclick="internetSearch()">Find Places</button>
+    </div>
+    <ul id="internetResults" class="cards"></ul>
+  </div>
+</section>
+
+<section id="local" class="slide">
+  <div class="overlay"></div>
+  <div class="content">
+    <h2>Recommended by Local People</h2>
+    <div class="search-bar multi">
+      <div style="display:flex; gap:8px;">
+        <input id="localCity" list="citySuggestions" placeholder="City">
+        <button onclick="getUserLocation('localCity')" style="width:50px; padding:0;">📍</button>
+      </div>
+      <select id="localCategory">
+        <option value="">Category</option>
+        <option value="food">Food</option>
+        <option value="hospital">Hospital</option>
+        <option value="grocery">Grocery</option>
+        <option value="hostel">Hostel</option>
+      </select>
+      <select id="localBudget">
+        <option value="">Budget</option>
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+      </select>
+      <button onclick="localSearch()">Search</button>
+    </div>
+    <ul id="localResults" class="cards"></ul>
+    <div class="cta">
+      <p>Know good places in your city?</p>
+      <a href="https://form.typeform.com/to/bi4mmp7g" target="_blank">Contribute Recommendation</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">Developed by LBS Team | Academic Project</footer>
+<script src="script.js"></script>
+</body>
+</html>
