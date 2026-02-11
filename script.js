@@ -1,6 +1,15 @@
 /* ================= LOCAL DATA ================= */
 let localData = [
   {
+    "name": "Zinga Circle",
+    "category": "Grocery",
+    "city": "Surat",
+    "area": "Jinga Circle (Near Dotiwala Bakery)",
+    "budget": "Medium",
+    "image":"https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=27j5lcT3HWUXsgsAqlqw3w&cb_client=search.gws-prod.gps&w=408&h=240&yaw=313.82266&pitch=0&thumbfov=100",
+    "reason": "Taste of the food is the reason to visit"
+  }
+  {
     "name": "Sainath Alooopuri",
     "category": "Food",
     "city": "Surat",
@@ -212,4 +221,5 @@ function localSearch() {
     resList.appendChild(li);
   });
 }
+
 
