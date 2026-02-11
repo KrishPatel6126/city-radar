@@ -1,4 +1,4 @@
-/* ================= LOCAL DATA ================= */
+/* ================= DATA & INITIALIZATION ================= */
 let localData = [
   {
     "name": "Zinga Circle",
@@ -8,32 +8,40 @@ let localData = [
     "budget": "Medium",
     "image": "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=27j5lcT3HWUXsgsAqlqw3w&cb_client=search.gws-prod.gps&w=408&h=240&yaw=313.82266&pitch=0&thumbfov=100",
     "reason": "Taste of the food is the reason to visit"
-  }, // <--- FIXED: Added missing comma here
+  },
   {
     "name": "Sainath Alooopuri",
     "category": "Food",
     "city": "Surat",
     "area": "L.P.S School",
     "budget": "Low",
-    // NOTE: This long URL might expire. Consider hosting images locally or using permanent links.
     "image": "https://lh3.googleusercontent.com/p/AF1QipN3-y1z5J5g8x7k9l8m6n5o4p3q2r1s0t9u8v7w=s1360-w1360-h1020", 
     "reason": "Taste of the food is the reason to visit"
   }
 ];
 
-// Try loading external data (overrides backup if found)
+// Load external data if available
 fetch("localData.json")
-  .then(res => {
-    if (!res.ok) throw new Error("File not found");
-    return res.json();
-  })
+  .then(res => res.ok ? res.json() : Promise.reject())
   .then(data => {
     localData = Array.isArray(data) ? data : [data];
-    console.log("Local data loaded from file:", localData);
+    console.log("Local data synced.");
   })
-  .catch(() => console.log("Using backup local data"));
+  .catch(() => console.log("Using internal backup data."));
 
-/* ================= LOCATION FEATURE ================= */
+/* ================= NAVIGATION ================= */
+function switchSlide(id, btn) {
+  // Remove active state from all slides and tabs
+  document.querySelectorAll(".slide").forEach(s => s.classList.remove("active"));
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  
+  // Activate selected slide and tab
+  const targetSlide = document.getElementById(id);
+  if (targetSlide) targetSlide.classList.add("active");
+  if (btn) btn.classList.add("active");
+}
+
+/* ================= GEOLOCATION ================= */
 function getUserLocation(inputId) {
   const field = document.getElementById(inputId);
   if (!navigator.geolocation) {
@@ -44,30 +52,19 @@ function getUserLocation(inputId) {
   field.placeholder = "Locating...";
   navigator.geolocation.getCurrentPosition(
     (position) => {
-      // In a real app, you would use a reverse geocoding API here.
-      // For this demo, we default to Surat.
+      // Defaulting to Surat as a placeholder for reverse geocoding
       field.value = "Surat"; 
       field.placeholder = "Enter city or country";
-      setLocation(); // Auto-trigger the background change
+      if(inputId === 'internetCity') setLocation(); 
     },
     (error) => {
       field.placeholder = "Location failed";
-      console.error("Error getting location:", error);
+      console.error("Geolocation error:", error);
     }
   );
 }
 
-/* ================= SLIDE SWITCH ================= */
-function switchSlide(id, btn) {
-  document.querySelectorAll(".slide").forEach(s => s.classList.remove("active"));
-  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-  
-  const targetSlide = document.getElementById(id);
-  if (targetSlide) targetSlide.classList.add("active");
-  if (btn) btn.classList.add("active");
-}
-
-/* ================= SET LOCATION & BACKGROUND ================= */
+/* ================= INTERNET SECTION LOGIC ================= */
 function setLocation() {
   const input = document.getElementById("internetCity").value.trim().toLowerCase();
   if (!input) return;
@@ -76,46 +73,25 @@ function setLocation() {
   const title = document.getElementById("internetTitle");
   const options = document.getElementById("internetOptions");
 
-  // Define keywords mapped to image filenames
   const cityKeywords = {
-    "surat": "surat",
-    "mumbai": "mumbai", "bombay": "mumbai",
-    "delhi": "delhi",
-    "bangalore": "bangalore", "bengaluru": "bangalore",
-    "hyderabad": "hyderabad",
-    "ahmedabad": "ahmedabad",
-    "argentina": "argentina", "buenos aires": "argentina",
-    "rio": "brazil", "brazil": "brazil", "sao paulo": "brazil",
-    "spain": "barcelona", "madrid": "barcelona", "barcelona": "barcelona",
-    "portugal": "portugal", "lisbon": "portugal",
-    "germany": "berlin", "berlin": "berlin", "munich": "berlin",
-    "italy": "rome", "rome": "rome", "venice": "rome"
+    "surat": "surat", "mumbai": "mumbai", "bombay": "mumbai",
+    "delhi": "delhi", "bangalore": "bangalore", "bengaluru": "bangalore",
+    "hyderabad": "hyderabad", "ahmedabad": "ahmedabad",
+    "argentina": "argentina", "brazil": "brazil", "spain": "barcelona",
+    "portugal": "portugal", "germany": "berlin", "italy": "rome"
   };
 
   let imageKey = "default";
-
-  // Check if input contains any of our keywords
   const matchedKey = Object.keys(cityKeywords).find(key => input.includes(key));
-  
-  if (matchedKey) {
-    imageKey = cityKeywords[matchedKey];
-  }
+  if (matchedKey) imageKey = cityKeywords[matchedKey];
 
-  // Update DOM
   slide.style.backgroundImage = `url("backgrounds/${imageKey}.jpg")`;
-  
-  // Capitalize first letter for title
-  const displayCity = input.charAt(0).toUpperCase() + input.slice(1);
-  title.innerText = `Discover the Best Places in ${displayCity}`;
-
+  title.innerText = `Discover the Best Places in ${input.charAt(0).toUpperCase() + input.slice(1)}`;
   options.classList.remove("hidden");
 }
 
-/* ================= INTERNET SEARCH ================= */
 function internetSearch() {
   const results = document.getElementById("internetResults");
-  results.innerHTML = "";
-
   const city = document.getElementById("internetCity").value.trim();
   const category = document.getElementById("internetCategory").value.trim();
   
@@ -124,13 +100,16 @@ function internetSearch() {
     return;
   }
 
+  results.innerHTML = "";
   const li = document.createElement("li");
+  li.className = "card";
   li.innerHTML = `
-    <strong>${category.toUpperCase()} in ${city}</strong>
-    <div class="meta">Click to open in Google Maps</div>
+    <div class="card-content" style="padding:15px;">
+      <strong>${category.toUpperCase()} in ${city}</strong>
+      <div class="meta">Click to open in Google Maps</div>
+    </div>
   `;
 
-  // FIXED: Correct Template Literal Syntax and standard Maps URL
   li.onclick = () => {
     const query = encodeURIComponent(`${category} near ${city}`);
     window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, "_blank");
@@ -139,61 +118,52 @@ function internetSearch() {
   results.appendChild(li);
 }
 
-/* ================= LOCAL SEARCH ================= */
-/* ================= LOCAL SEARCH (FIXED) ================= */
+/* ================= LOCAL SECTION LOGIC ================= */
 function localSearch() {
   const resList = document.getElementById("localResults");
-  resList.innerHTML = "";
-
   const city = document.getElementById("localCity").value.trim().toLowerCase();
   const category = document.getElementById("localCategory").value.trim().toLowerCase();
   const budget = document.getElementById("localBudget").value.trim().toLowerCase();
 
-  // Filter the data
+  resList.innerHTML = "";
+
   const filtered = localData.filter(p =>
     (city === "" || p.city.toLowerCase().includes(city)) &&
     (category === "" || p.category.toLowerCase().includes(category)) &&
     (budget === "" || p.budget.toLowerCase().includes(budget))
   );
 
-  // Handle no results
   if (!filtered.length) {
     resList.innerHTML = `<li style="grid-column:1/-1; text-align:center; padding: 20px;">No verified results found.</li>`;
     return;
   }
 
-  // Render results
   filtered.forEach(p => {
     const li = document.createElement("li");
+    li.className = "card";
+    li.style.cursor = "pointer";
     
-    // safe image handling
     const imgHtml = p.image 
-      ? `<img src="${p.image}" class="card-img" onerror="this.style.display='none'">` 
-      : `<div class="no-img" style="height:150px; background:#ddd;"></div>`;
+      ? `<img src="${p.image}" class="card-img" onerror="this.src='backgrounds/default.jpg'">` 
+      : `<div class="no-img" style="height:150px; background:#222;"></div>`;
 
     li.innerHTML = `
       ${imgHtml}
-      <div class="card-content" style="padding:10px;">
-        <strong>${p.name}</strong>
-        <div class="meta" style="font-size:0.9em; color:#666;">
+      <div class="card-content" style="padding:15px;">
+        <strong style="display:block; margin-bottom:5px;">${p.name}</strong>
+        <div class="meta" style="font-size:0.85em; color:#ccc; line-height:1.4;">
           <b>Area:</b> ${p.area}<br>
-          <b>Reason:</b> ${p.reason}
+          <b>Reason:</b> ${p.reason}<br>
+          <b>Budget:</b> ${p.budget}
         </div>
       </div>
     `;
 
-    // ▼▼▼ THIS IS THE FIX ▼▼▼
     li.onclick = () => {
-      // We use the standard maps search URL
       const query = encodeURIComponent(`${p.name} ${p.city}`);
       window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, "_blank");
     };
-    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
-
-    // Make it look clickable
-    li.style.cursor = "pointer"; 
     
     resList.appendChild(li);
   });
 }
-
