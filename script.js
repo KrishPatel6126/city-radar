@@ -98,7 +98,8 @@ function setLocation() {
     input.includes("madrid") ||
     input.includes("valencia") ||
     input.includes("sevilla") ||
-    input.includes("seville")
+    input.includes("seville") ||
+    input.includes("barcelona")
   ) {
     imageKey = "barcelona";
   }
@@ -211,3 +212,4 @@ function localSearch() {
     resList.appendChild(li);
   });
 }
+
