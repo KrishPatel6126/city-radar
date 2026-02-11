@@ -1,58 +1,69 @@
-// Utility function to sanitize text to prevent XSS
+// script.js
+
+// Sanitize text to prevent XSS
 function sanitizeText(input) {
-    const element = document.createElement('div');
-    element.innerText = input;
-    return element.innerHTML;
+    const div = document.createElement('div');
+    div.innerText = input;
+    return div.innerHTML;
 }
 
-// Function to capture geolocation
-function captureGeolocation() {
+// Get user's geolocation
+function getGeolocation() {
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(position => {
-            console.log(`Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`);
-        }, error => {
-            console.error('Error retrieving location:', error);
-        });
+        navigator.geolocation.getCurrentPosition(showPosition, handleError);
     } else {
-        console.warn('Geolocation is not supported by this browser.');
+        console.error('Geolocation is not supported by this browser.');
     }
 }
 
-// Input validation function with optional chaining
+function showPosition(position) {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+    // Use latitude and longitude as needed
+}
+
+function handleError(error) {
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            console.error("User denied the request for Geolocation.");
+            break;
+        case error.POSITION_UNAVAILABLE:
+            console.error("Location information is unavailable.");
+            break;
+        case error.TIMEOUT:
+            console.error("The request to get user location timed out.");
+            break;
+        case error.UNKNOWN_ERROR:
+            console.error("An unknown error occurred.");
+            break;
+    }
+}
+
+// Input validation with optional chaining
 function validateInput(input) {
-    return input?.trim().length > 0; // Checks if input is non-null and non-empty
+    return input?.trim() !== ''; // Valid if input is non-empty
 }
 
-// Function to apply background image styling
-function applyBackgroundImage(url) {
-    document.body.style.backgroundImage = `url('${url}')`;
+// Background image styling
+function setBackgroundImage(url) {
+    document.body.style.backgroundImage = `url(${url})`;
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundPosition = 'center';
 }
 
-// Mapping Porto/Portugal city keywords
-const cityKeywords = {
-    'porto': 'Portugal',
-    'portugal': 'Portuguese city'
-};
-
-// Main application logic
-function main() {
-    // Validate user input
-    const userInput = document.querySelector('#inputField')?.value;
-    if (!validateInput(userInput)) {
-        console.error('Invalid input!');
-        return;
+// Main logic
+window.onload = function() {
+    const userInput = document.getElementById('user-input').value;
+    if (validateInput(userInput)) {
+        const sanitizedInput = sanitizeText(userInput);
+        console.log(`User input: ${sanitizedInput}`);
+        // Further processing logic...
+    } else {
+        console.error('Invalid input.');
     }
-
-    // Sanitize user input
-    const safeInput = sanitizeText(userInput);
-    console.log('Safe input:', safeInput);
-
-    // Capture geolocation
-    captureGeolocation();
-
-    // Apply background image (example URL)
-    applyBackgroundImage('path/to/your/background-image.jpg');
-}
-
-// Running the application
-main();
+    getGeolocation();
+    setBackgroundImage('path/to/your/image.jpg'); // Update with an actual image path
+    // Handling porto/portugal keywords
+    const cities = ['Porto', 'Portugal'];
+    console.log(cities);
+};
