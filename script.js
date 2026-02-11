@@ -7,7 +7,7 @@ let localData = [
     "area": "Jinga Circle (Near Dotiwala Bakery)",
     "budget": "Medium",
     "image": "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=27j5lcT3HWUXsgsAqlqw3w&cb_client=search.gws-prod.gps&w=408&h=240&yaw=313.82266&pitch=0&thumbfov=100",
-    "reason": "Taste of the food is the reason to visit"
+   "reason": "Best budget fishes and raw sea food",
   },
   {
     "name": "Sainath Alooopuri",
@@ -167,3 +167,4 @@ function localSearch() {
     resList.appendChild(li);
   });
 }
+
