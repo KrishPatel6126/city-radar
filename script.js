@@ -140,6 +140,7 @@ function internetSearch() {
 }
 
 /* ================= LOCAL SEARCH ================= */
+/* ================= LOCAL SEARCH (FIXED) ================= */
 function localSearch() {
   const resList = document.getElementById("localResults");
   resList.innerHTML = "";
@@ -148,42 +149,51 @@ function localSearch() {
   const category = document.getElementById("localCategory").value.trim().toLowerCase();
   const budget = document.getElementById("localBudget").value.trim().toLowerCase();
 
+  // Filter the data
   const filtered = localData.filter(p =>
     (city === "" || p.city.toLowerCase().includes(city)) &&
     (category === "" || p.category.toLowerCase().includes(category)) &&
     (budget === "" || p.budget.toLowerCase().includes(budget))
   );
 
+  // Handle no results
   if (!filtered.length) {
-    resList.innerHTML = `<li style="grid-column:1/-1; text-align:center;">No verified results found for your criteria.</li>`;
+    resList.innerHTML = `<li style="grid-column:1/-1; text-align:center; padding: 20px;">No verified results found.</li>`;
     return;
   }
 
+  // Render results
   filtered.forEach(p => {
     const li = document.createElement("li");
     
-    // Fallback image if none provided
+    // safe image handling
     const imgHtml = p.image 
       ? `<img src="${p.image}" class="card-img" onerror="this.style.display='none'">` 
-      : `<div class="no-img">No Image</div>`;
+      : `<div class="no-img" style="height:150px; background:#ddd;"></div>`;
 
     li.innerHTML = `
       ${imgHtml}
-      <div class="card-content">
+      <div class="card-content" style="padding:10px;">
         <strong>${p.name}</strong>
-        <div class="meta">
+        <div class="meta" style="font-size:0.9em; color:#666;">
           <b>Area:</b> ${p.area}<br>
           <b>Reason:</b> ${p.reason}
         </div>
       </div>
     `;
 
-    // FIXED: Correct Template Literal Syntax
+    // ▼▼▼ THIS IS THE FIX ▼▼▼
     li.onclick = () => {
+      // We use the standard maps search URL
       const query = encodeURIComponent(`${p.name} ${p.city}`);
       window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, "_blank");
     };
+    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
+    // Make it look clickable
+    li.style.cursor = "pointer"; 
+    
     resList.appendChild(li);
   });
 }
+
