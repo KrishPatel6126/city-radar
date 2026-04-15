@@ -1,12 +1,12 @@
 /* ================= LOAD LOCAL DATA ================= */
 
-let localData = [];
+let localdata = [];
 
 fetch("localdata.json")
   .then(res => res.json())
   .then(data => {
-    localData = Array.isArray(data) ? data : [data];
-    console.log("Local data loaded:", localData);
+    localdata = Array.isArray(data) ? data : [data];
+    console.log("Local data loaded:", localdata);
   })
   .catch(err => console.log("Error loading JSON:", err));
 
