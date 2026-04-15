@@ -55,30 +55,37 @@ function setLocation() {
     "ahmedabad": "ahmedabad"
   };
 
-  let imageKey = "default";
+let imageKey = "default";
 
-  if (indiaCities[input]) imageKey = indiaCities[input];
+if (indiaCities[input]) {
+  imageKey = indiaCities[input];
+}
 
-  else if (
-    input.includes("argentina") ||
-    input.includes("buenos aires") ||
-    input.includes("rosario")
-  ) imageKey = "argentina";
+else if (
+  input.includes("argentina") ||
+  input.includes("buenos aires") ||
+  input.includes("rosario")
+) {
+  imageKey = "argentina";
+}
 
-  else if (
-    input.includes("brazil") ||
-    input.includes("rio") ||
-    input.includes("sao paulo")
-  ) imageKey = "brazil";
+else if (
+  input.includes("brazil") ||
+  input.includes("rio") ||
+  input.includes("sao paulo")
+) {
+  imageKey = "brazil";
+}
 
-  else if (
+else if (
   input.includes("spain") ||
   input.includes("madrid") ||
   input.includes("barcelona")
 ) {
   imageKey = "barcelona";
 }
- else if (
+
+else if (
   input.includes("portugal") ||
   input.includes("lisbon") ||
   input.includes("porto")
@@ -86,14 +93,26 @@ function setLocation() {
   imageKey = "portugal";
 }
 
-  else if (input.includes("germany") || input.includes("berlin"))
-    imageKey = "berlin";
+else if (
+  input.includes("germany") ||
+  input.includes("berlin")
+) {
+  imageKey = "berlin";
+}
 
-  else if (input.includes("italy") || input.includes("rome"))
-    imageKey = "rome";
-  
-  else if (input.includes("england") || input.includes("manchester"))
-    imageKey = "manchester";
+else if (
+  input.includes("italy") ||
+  input.includes("rome")
+) {
+  imageKey = "rome";
+}
+
+else if (
+  input.includes("england") ||
+  input.includes("manchester")
+) {
+  imageKey = "manchester";
+}
 
   slide.style.backgroundImage = `url("backgrounds/${imageKey}.jpg")`;
 
