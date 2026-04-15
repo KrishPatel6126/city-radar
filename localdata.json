@@ -8,7 +8,7 @@
     "recommendedFor": ["Anyone"],
     "usageFrequency": "Monthly",
     "reason": "Best budget fishes and raw sea food",
-    "image": "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=7ZoroEHAoaVX7ZGD850Hmg&cb_client=search.gws-prod.gps&w=408&h=240&yaw=289.9227&pitch=0&thumbfov=100",
+    "image": "",
     "source": "local_public"
   },
   {
@@ -20,7 +20,7 @@
     "recommendedFor": ["Anyone"],
     "usageFrequency": "Weekly",
     "reason": "Taste of the food is the reason to visit",
-    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoaBOO2j7ASoaAiBrbEnnO0vF84NsNwbm-oA&s",
+    "image": "",
     "source": "local_public"
   }
 ]
