@@ -82,6 +82,9 @@ function setLocation() {
 
   else if (input.includes("italy") || input.includes("rome"))
     imageKey = "rome";
+  
+  else if (input.includes("england") || input.includes("manchester"))
+    imageKey = "manchester";
 
   slide.style.backgroundImage = `url("backgrounds/${imageKey}.jpg")`;
 
