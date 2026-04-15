@@ -1,192 +1,198 @@
-/**
- * CITY RADAR - Main Application Script
- * ------------------------------------
- * Features: 
- * - Dynamic Tab Switching
- * - Real-time Reverse Geocoding (📍)
- * - Intelligent Background Switching
- * - Local Data Integration & Filtering
- */
+/* ================= LOAD LOCAL DATA ================= */
 
-// --- CONFIGURATION & STATE ---
-const CONFIG = {
-    DEFAULT_BG: 'backgrounds/default.jpg',
-    GEO_API_URL: 'https://nominatim.openstreetmap.org/reverse',
-    CITY_MAP: {
-        "surat": "surat", "mumbai": "mumbai", "delhi": "delhi",
-        "bangalore": "bangalore", "ahmedabad": "ahmedabad",
-        "london": "london", "paris": "paris", "tokyo": "tokyo"
-    }
-};
+let localData = [];
 
-let appData = {
-    localRecommendations: [],
-    currentTab: 'internet'
-};
+fetch("localData.json")
+  .then(res => res.json())
+  .then(data => {
+    localData = Array.isArray(data) ? data : [data];
+    console.log("Local data loaded:", localData);
+  })
+  .catch(err => console.log("Error loading JSON:", err));
 
-// --- INITIALIZATION ---
-document.addEventListener('DOMContentLoaded', async () => {
-    console.log("City Radar Initializing...");
-    await fetchLocalData();
-    setupEventListeners();
-});
 
-async function fetchLocalData() {
-    try {
-        const response = await fetch("localData.json");
-        if (!response.ok) throw new Error("Network error");
-        const data = await response.json();
-        appData.localRecommendations = Array.isArray(data) ? data : [data];
-    } catch (err) {
-        console.warn("Using fallback local data.");
-        // Static backup if JSON fails to load
-        appData.localRecommendations = [
-            {
-                name: "Zinga Circle",
-                category: "Grocery",
-                city: "Surat",
-                area: "Jinga Circle",
-                budget: "Medium",
-                image: "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=27j5lcT3HWUXsgsAqlqw3w&w=408&h=240",
-                reason: "Best raw sea food"
-            }
-        ];
-    }
+/* ================= LOCATION FEATURE ================= */
+
+function getUserLocation(inputId) {
+  const field = document.getElementById(inputId);
+  if (!navigator.geolocation) return;
+
+  field.placeholder = "Locating...";
+  navigator.geolocation.getCurrentPosition(() => {
+    field.value = "Surat"; // demo default
+    field.placeholder = "Enter city or country";
+  });
 }
 
-// --- CORE FUNCTIONS ---
 
-/**
- * Handles Tab Navigation
- */
-window.switchSlide = (slideId, activeBtn) => {
-    // Update UI elements
-    document.querySelectorAll(".slide").forEach(s => s.style.display = 'none');
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+/* ================= SLIDE SWITCH ================= */
 
-    const targetSlide = document.getElementById(slideId);
-    if (targetSlide) {
-        targetSlide.style.display = 'block';
-        targetSlide.classList.add("active");
-    }
-    if (activeBtn) activeBtn.classList.add("active");
-    
-    appData.currentTab = slideId;
-};
+function switchSlide(id, btn) {
+  document.querySelectorAll(".slide").forEach(s => s.classList.remove("active"));
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  btn.classList.add("active");
+}
 
-/**
- * Geolocation logic with actual City Name lookup
- */
-window.getUserLocation = (inputId) => {
-    const field = document.getElementById(inputId);
-    if (!navigator.geolocation) return alert("Geolocation is not supported.");
 
-    field.placeholder = "Locating city...";
-    
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-        const { latitude, longitude } = pos.coords;
-        try {
-            const res = await fetch(`${CONFIG.GEO_API_URL}?lat=${latitude}&lon=${longitude}&format=json`);
-            const data = await res.json();
-            const city = data.address.city || data.address.town || data.address.village || "Surat";
-            
-            field.value = city;
-            field.placeholder = "City Name";
-            
-            if (inputId === 'internetCity') setLocation();
-        } catch (e) {
-            field.value = "Surat"; // Fallback
-            if (inputId === 'internetCity') setLocation();
-        }
-    }, () => {
-        field.placeholder = "Location access denied";
-        alert("Please enable location permissions.");
-    });
-};
+/* ================= SET LOCATION & BACKGROUND ================= */
 
-/**
- * Updates Internet slide context (Background & Title)
- */
-window.setLocation = () => {
-    const input = document.getElementById("internetCity")?.value.trim();
-    if (!input) return;
+function setLocation() {
 
-    const slide = document.getElementById("internet");
-    const title = document.getElementById("internetTitle");
-    const options = document.getElementById("internetOptions");
+  const input = document.getElementById("internetCity").value.trim().toLowerCase();
+  if (!input) return;
 
-    // Dynamic Background Mapping
-    const lowerInput = input.toLowerCase();
-    const cityKey = Object.keys(CONFIG.CITY_MAP).find(k => lowerInput.includes(k));
-    const bgName = cityKey ? CONFIG.CITY_MAP[cityKey] : 'default';
+  const slide = document.getElementById("internet");
+  const title = document.getElementById("internetTitle");
+  const options = document.getElementById("internetOptions");
 
-    if (slide) slide.style.backgroundImage = `url('backgrounds/${bgName}.jpg')`;
-    if (title) title.innerText = `Exploring ${input}`;
-    if (options) options.classList.remove("hidden");
-};
+  const indiaCities = {
+    "surat": "surat",
+    "mumbai": "mumbai",
+    "delhi": "delhi",
+    "bangalore": "bangalore",
+    "hyderabad": "hyderabad",
+    "ahmedabad": "ahmedabad"
+  };
 
-/**
- * Performs External Map Search
- */
-window.internetSearch = () => {
-    const city = document.getElementById("internetCity")?.value.trim();
-    const category = document.getElementById("internetCategory")?.value;
-    const resultsContainer = document.getElementById("internetResults");
+  let imageKey = "default";
 
-    if (!city || !category) return alert("Select both city and category.");
+  if (indiaCities[input]) imageKey = indiaCities[input];
 
-    resultsContainer.innerHTML = `
-        <li class="card" style="cursor:pointer" onclick="openMapSearch('${category} in ${city}')">
-            <div class="card-content">
-                <strong>Top ${category.toUpperCase()} in ${city}</strong>
-                <p class="meta">Click to view live results on Google Maps ↗</p>
-            </div>
-        </li>
-    `;
-};
+  else if (
+    input.includes("argentina") ||
+    input.includes("buenos aires") ||
+    input.includes("rosario")
+  ) imageKey = "argentina";
 
-/**
- * Internal Search for Local Recommendations
- */
-window.localSearch = () => {
-    const container = document.getElementById("localResults");
-    const city = document.getElementById("localCity")?.value.toLowerCase().trim();
-    const category = document.getElementById("localCategory")?.value.toLowerCase();
-    const budget = document.getElementById("localBudget")?.value.toLowerCase();
+  else if (
+    input.includes("brazil") ||
+    input.includes("rio") ||
+    input.includes("sao paulo")
+  ) imageKey = "brazil";
 
-    const filtered = appData.localRecommendations.filter(item => 
-        (!city || item.city.toLowerCase().includes(city)) &&
-        (!category || item.category.toLowerCase() === category) &&
-        (!budget || item.budget.toLowerCase() === budget)
+  else if (input.includes("spain") || input.includes("madrid"))
+    imageKey = "barcelona";
+
+  else if (input.includes("portugal") || input.includes("lisbon"))
+    imageKey = "portugal";
+
+  else if (input.includes("germany") || input.includes("berlin"))
+    imageKey = "berlin";
+
+  else if (input.includes("italy") || input.includes("rome"))
+    imageKey = "rome";
+
+  slide.style.backgroundImage = `url("backgrounds/${imageKey}.jpg")`;
+
+  title.innerText =
+    `Discover the Best Places in ${input.charAt(0).toUpperCase() + input.slice(1)}`;
+
+  options.classList.remove("hidden");
+}
+
+
+/* ================= INTERNET SEARCH ================= */
+
+function internetSearch() {
+
+  const results = document.getElementById("internetResults");
+  results.innerHTML = "";
+
+  const city = document.getElementById("internetCity").value.trim();
+  const category = document.getElementById("internetCategory").value.trim();
+  if (!city || !category) return;
+
+  const li = document.createElement("li");
+  li.innerHTML = `
+    <strong>${category.toUpperCase()} in ${city}</strong>
+    <div class="meta">Open in Google Maps</div>
+  `;
+
+  li.onclick = () => {
+    window.open(
+      `https://www.google.com/maps/search/${encodeURIComponent(category + " near " + city)}`,
+      "_blank"
     );
+  };
 
-    container.innerHTML = filtered.length ? "" : '<li class="no-results">No local matches found.</li>';
+  results.appendChild(li);
+}
 
-    filtered.forEach(item => {
-        const li = document.createElement("li");
-        li.className = "card";
-        li.innerHTML = `
-            <img src="${item.image}" class="card-img" onerror="this.src='${CONFIG.DEFAULT_BG}'">
-            <div class="card-content">
-                <strong>${item.name}</strong>
-                <div class="meta">
-                    <span>📍 ${item.area}</span><br>
-                    <span>💰 Budget: ${item.budget}</span>
-                    <p class="reason">"${item.reason}"</p>
-                </div>
-            </div>
-        `;
-        li.onclick = () => openMapSearch(`${item.name} ${item.city}`);
-        container.appendChild(li);
-    });
-};
 
-// --- HELPER FUNCTIONS ---
-window.openMapSearch = (query) => {
-    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`, "_blank");
-};
+/* ================= SMART SCORING FUNCTION ================= */
 
-function setupEventListeners() {
-    // Add any global listeners here if needed
-    console.log("Event listeners active.");
+function calculateScore(place, selectedBudget) {
+
+  let score = 0;
+
+  // Budget Match
+  if (place.budget.toLowerCase() === selectedBudget) score += 5;
+
+  // Usage Frequency Weight
+  if (place.usageFrequency.toLowerCase() === "weekly") score += 4;
+  else if (place.usageFrequency.toLowerCase() === "monthly") score += 2;
+
+  return score;
+}
+
+
+/* ================= LOCAL SEARCH ================= */
+
+function localSearch() {
+
+  const resList = document.getElementById("localResults");
+  resList.innerHTML = "";
+
+  const city = document.getElementById("localCity").value.trim().toLowerCase();
+  const category = document.getElementById("localCategory").value.trim().toLowerCase();
+  const budget = document.getElementById("localBudget").value.trim().toLowerCase();
+
+  let filtered = localData.filter(p =>
+    p.city.toLowerCase().includes(city) &&
+    p.category.toLowerCase().includes(category)
+  );
+
+  if (!filtered.length) {
+    resList.innerHTML = `<li style="grid-column:1/-1">No verified results found</li>`;
+    return;
+  }
+
+  // Apply scoring
+  filtered = filtered.map(p => ({
+    ...p,
+    score: calculateScore(p, budget)
+  }));
+
+  // Sort by score
+  filtered.sort((a, b) => b.score - a.score);
+
+  filtered.forEach((p, index) => {
+
+    const li = document.createElement("li");
+
+    li.classList.add("fade-in");
+    li.style.animationDelay = `${index * 0.08}s`;
+
+    li.innerHTML = `
+      ${index === 0 ? `<div class="badge">Top Recommended</div>` : ""}
+      ${p.image ? `<img src="${p.image}" class="card-img">` : ""}
+      <strong>${p.name}</strong>
+      <div class="meta">
+        <b>Area:</b> ${p.area}<br>
+        <b>Budget:</b> ${p.budget}<br>
+        <b>Recommended For:</b> ${p.recommendedFor.join(", ")}<br>
+        <b>Reason:</b> ${p.reason}
+      </div>
+    `;
+
+    li.onclick = () => {
+      window.open(
+        `https://www.google.com/maps/search/${encodeURIComponent(p.name + " " + p.city)}`,
+        "_blank"
+      );
+    };
+
+    resList.appendChild(li);
+  });
 }
