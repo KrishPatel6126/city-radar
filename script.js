@@ -71,7 +71,7 @@ function setLocation() {
     input.includes("sao paulo")
   ) imageKey = "brazil";
 
-  else if (input.includes("spain") || input.includes("madrid"))
+  else if (input.includes("spain") || (input.includes("madrid") || (input.includes("barcelona"))
     imageKey = "barcelona";
 
   else if (input.includes("Portugal") || (input.includes("lisbon") || (input.includes("porto"))
@@ -83,7 +83,7 @@ function setLocation() {
   else if (input.includes("italy") || input.includes("rome"))
     imageKey = "rome";
   
-  else if (input.includes("england") || input.includes("manchester"))
+  else if (input.includes("england") || (input.includes("manchester"))
     imageKey = "manchester";
 
   slide.style.backgroundImage = `url("backgrounds/${imageKey}.jpg")`;
