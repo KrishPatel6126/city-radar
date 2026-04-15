@@ -74,7 +74,7 @@ function setLocation() {
   else if (input.includes("spain") || input.includes("madrid"))
     imageKey = "barcelona";
 
-  else if (input.includes("Portugal") || input.includes("lisbon")) || input.includes("porto"))
+  else if (input.includes("Portugal") || input.includes("lisbon") || input.includes("porto"))
     imageKey = "Portugal";
 
   else if (input.includes("germany") || input.includes("berlin"))
