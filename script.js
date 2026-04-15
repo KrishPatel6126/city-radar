@@ -2,7 +2,7 @@
 
 let localData = [];
 
-fetch("localData.json")
+fetch("localdata.json")
   .then(res => res.json())
   .then(data => {
     localData = Array.isArray(data) ? data : [data];
