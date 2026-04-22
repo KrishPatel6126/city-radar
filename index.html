@@ -7,6 +7,27 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- LOGIN BUTTON -->
+<div class="auth">
+  <button onclick="openAuth()">Login</button>
+  <span id="userDisplay"></span>
+</div>
+
+<!-- AUTH MODAL -->
+<div id="authModal" class="modal hidden">
+  <div class="modal-box">
+    <h3 id="authTitle">Login</h3>
+
+    <input id="authName" placeholder="Name">
+    <input id="authPass" type="password" placeholder="Password">
+
+    <button onclick="handleAuth()">Submit</button>
+
+    <p onclick="toggleAuth()" style="cursor:pointer;">
+      Switch to Signup
+    </p>
+  </div>
+</div>
 
 <header class="topbar">
   <h1>City Radar</h1>
